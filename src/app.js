@@ -6,6 +6,7 @@ const {
 
 const P = require("pino");
 const qrcode = require("qrcode-terminal");
+const { app, setSocket } = require("./server");
 
 async function startBot() {
 
@@ -25,6 +26,10 @@ async function startBot() {
     auth: state,
     version,
     logger: P({ level: "silent" })
+  });
+  setSocket(sock);
+  app.listen(3000, () => {
+    console.log("🚀 WA API running on port 3000");
   });
 
   sock.ev.on("creds.update", saveCreds);
@@ -82,6 +87,7 @@ sock.ev.on("connection.update", async (update) => {
     if (reason !== DisconnectReason.loggedOut) {
       console.log("🔄 Reconnecting...");
       startBot();
+
     } else {
       console.log("🚫 Logged out, scan ulang QR");
     }
